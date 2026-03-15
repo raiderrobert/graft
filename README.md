@@ -1,14 +1,11 @@
 # graft
 
-A version-tracked file dependency manager, written in Rust.
+Package manager for paths.
 
-- **Track individual files** from any GitHub repo: Makefiles, CI workflows, linter configs, skills, whatever.
-- **Three-way merge on upgrade.** Edit your local copy freely. When upstream updates, graft merges both sets of changes.
-- **Manifest + lockfile.** `graft.toml` declares what you depend on. `graft.lock` pins exact commit SHAs and checksums.
-- **Smart outdated detection.** Only reports a new version when the file content actually changed, not just when the tag bumped.
-- **Works with private repos.** Uses your existing `GH_TOKEN`, `GITHUB_TOKEN`, or `gh` CLI credentials.
-- **CI-friendly.** `graft check` exits non-zero if anything is modified or stale.
-- **No publishing step.** Tag your repo. That's it.
+- **Pin files, not packages.** Pull a Makefile, a CI workflow, or a linter config from any GitHub repo and lock it to a version.
+- **Edit freely, upgrade safely.** Your local changes are preserved through three-way merge on upgrade.
+- **No registry, no publishing.** Tag your source repo. Any file in any GitHub repo is a valid dependency.
+- **CI-ready.** `graft check` exits non-zero if anything is modified or stale.
 
 ## Install
 
