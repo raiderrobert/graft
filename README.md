@@ -10,6 +10,12 @@ A "package manager" for paths, both files and dirs.
 ## Install
 
 ```bash
+curl -fsSL https://raw.githubusercontent.com/raiderrobert/graft/main/install.sh | sh
+```
+
+Or build from source:
+
+```bash
 cargo install --path .
 ```
 
