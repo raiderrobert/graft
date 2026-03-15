@@ -13,7 +13,7 @@ fn main() -> miette::Result<()> {
             dest,
             adopt,
             force,
-        } => commands::add::run(&source, &dest, adopt, force),
+        } => commands::add::run(&source, dest.as_deref(), adopt, force),
         Commands::Sync { no_cache } => commands::sync::run(no_cache),
         Commands::List => commands::list::run(),
         Commands::Check => commands::check::run(),

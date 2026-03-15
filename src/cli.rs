@@ -1,7 +1,7 @@
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
-#[command(name = "graft", about = "A package manager for config files", version)]
+#[command(name = "graft", about = "Package manager for paths", version)]
 pub struct Cli {
     #[command(subcommand)]
     pub command: Commands,
@@ -17,8 +17,8 @@ pub enum Commands {
         /// Source and version: gh:owner/repo/path@version
         source: String,
 
-        /// Local destination path
-        dest: String,
+        /// Local destination path (defaults to the source path)
+        dest: Option<String>,
 
         /// Track an existing local file without overwriting
         #[arg(long)]

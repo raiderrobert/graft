@@ -16,3 +16,8 @@ Feature: Add a file dependency from a GitHub repo
     Given an empty project directory with "graft.toml"
     When I run "graft add gh:owner/repo/hook@v1.0.0 .git/hooks/pre-commit"
     Then the command should fail
+
+  Scenario: Add rejects path traversal without graft.toml
+    Given an empty project directory
+    When I run "graft add gh:owner/repo/evil@v1.0.0 ../etc/passwd"
+    Then the command should fail

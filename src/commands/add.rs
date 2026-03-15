@@ -1,6 +1,7 @@
 use std::path::Path;
 
 use console::style;
+use indexmap::IndexMap;
 
 use graft::cache::Cache;
 use graft::checksum::{checksum_bytes, checksum_directory};
@@ -11,21 +12,30 @@ use graft::github::auth::resolve_token;
 use graft::github::client::GitHubClient;
 use graft::source::parse::GraftSource;
 
-pub fn run(source: &str, dest: &str, adopt: bool, force: bool) -> miette::Result<()> {
+pub fn run(source: &str, dest: Option<&str>, adopt: bool, force: bool) -> miette::Result<()> {
     // 1. Parse source@version
     let (graft_source, version) = GraftSource::parse_with_version(source)?;
 
     // 2. Derive a graft name
     let name = derive_name(&graft_source.path);
 
-    // 3. Validate dest path before any network calls
+    // 3. Determine dest: use provided value or default to the source path
+    let dest = dest.unwrap_or(&graft_source.path);
+
+    // 4. Validate dest path before any network calls
     validate_dest(dest)?;
 
-    // 4. Load existing manifest (error if not found)
+    // 5. Load existing manifest or create empty one
     let manifest_path = Path::new("graft.toml");
-    let mut manifest = Manifest::load(manifest_path)?;
+    let mut manifest = if manifest_path.exists() {
+        Manifest::load(manifest_path)?
+    } else {
+        Manifest {
+            grafts: IndexMap::new(),
+        }
+    };
 
-    // 5. Check if dest already exists on disk
+    // 6. Check if dest already exists on disk
     let dest_path = Path::new(dest);
     if dest_path.exists() && !adopt && !force {
         return Err(GraftError::DestExists {
@@ -202,5 +212,17 @@ mod tests {
     #[case(".eslintrc.json", ".eslintrc")]
     fn derive_name_from_path(#[case] input: &str, #[case] expected: &str) {
         assert_eq!(derive_name(input), expected);
+    }
+
+    #[rstest]
+    #[case(
+        "gh:owner/repo/.github/workflows/release.yml@v1.0",
+        ".github/workflows/release.yml"
+    )]
+    #[case("gh:owner/repo/Makefile@v1.0", "Makefile")]
+    #[case("gh:owner/repo/skills/@v1.0", "skills/")]
+    fn default_dest_from_source(#[case] source: &str, #[case] expected_dest: &str) {
+        let (graft_source, _version) = GraftSource::parse_with_version(source).unwrap();
+        assert_eq!(graft_source.path, expected_dest);
     }
 }
