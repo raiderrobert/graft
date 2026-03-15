@@ -24,11 +24,10 @@ Or grab a binary from [GitHub Releases](https://github.com/raiderrobert/graft/re
 ## Quick Start
 
 ```bash
-graft init
-graft add gh:raiderrobert/graft/justfile@v0.1.0 justfile
+graft add gh:raiderrobert/graft/justfile@v0.1.0
 ```
 
-This fetches the file, writes it locally, and records the source in `graft.toml`:
+That's it. Graft fetches the file, writes it to `justfile` (matching the source path), and records it in `graft.toml`:
 
 ```toml
 [deps.justfile]
@@ -47,7 +46,7 @@ graft upgrade         # pull updates, three-way merge if you've edited locally
 Already have a file you copied manually? Adopt it:
 
 ```bash
-graft add gh:raiderrobert/graft/justfile@v0.1.0 justfile --adopt
+graft add gh:raiderrobert/graft/justfile@v0.1.0 --adopt
 ```
 
 This tracks the file without overwriting your local version. The next `graft upgrade` will merge upstream changes with your edits.
@@ -56,7 +55,7 @@ This tracks the file without overwriting your local version. The next `graft upg
 
 ```
 graft init                  Create graft.toml
-graft add <src@ver> <dest>  Fetch and track a file
+graft add <src@ver> [dest]  Fetch and track a file (dest defaults to source path)
 graft add ... --adopt       Track an existing local file
 graft sync                  Fetch all dependencies
 graft list                  Show grafts with status
