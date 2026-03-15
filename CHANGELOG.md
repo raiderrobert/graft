@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/raiderrobert/graft/compare/v0.1.2...v0.1.3) (2026-03-15)
+
+
+### Documentation
+
+* add BDD scenarios for identified design gaps ([96fc7e4](https://github.com/raiderrobert/graft/commit/96fc7e473714c9d5c70bf18b16ec1ec439c7872d))
+
 ## [0.1.2](https://github.com/raiderrobert/graft/compare/v0.1.1...v0.1.2) (2026-03-15)
 
 
