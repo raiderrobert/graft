@@ -4,7 +4,7 @@
 name = "graft"
 version = "0.1.0"
 edition = "2021"
-license = "MIT"
+license = "PolyForm-Shield-1.0.0"
 rust-version = "1.75"
 description = "A package manager for config files"
 
