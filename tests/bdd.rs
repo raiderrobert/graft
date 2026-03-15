@@ -142,6 +142,25 @@ fn stderr_should_contain(world: &mut GraftWorld, expected: String) {
     );
 }
 
+#[then(expr = "the exit code should be {int}")]
+fn exit_code_should_be(world: &mut GraftWorld, expected: i32) {
+    let code = world.exit_code.expect("no exit code captured");
+    assert_eq!(
+        code, expected,
+        "expected exit code {expected} but got {code}\nstdout: {}\nstderr: {}",
+        world.stdout, world.stderr
+    );
+}
+
+#[then(expr = "stdout should not contain {string}")]
+fn stdout_should_not_contain(world: &mut GraftWorld, unexpected: String) {
+    assert!(
+        !world.stdout.contains(&unexpected),
+        "expected stdout NOT to contain {unexpected:?}, but it did:\n{}",
+        world.stdout
+    );
+}
+
 fn main() {
     futures::executor::block_on(GraftWorld::run("tests/features"));
 }
