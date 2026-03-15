@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.1.2](https://github.com/raiderrobert/graft/compare/v0.1.1...v0.1.2) (2026-03-15)
+
+
+### Features
+
+* add install.sh and update README install section ([13027e2](https://github.com/raiderrobert/graft/commit/13027e2837bcde010a1bfae00b688fc6af9eaee7))
+* default dest to source path, auto-create graft.toml on first add ([b930c7c](https://github.com/raiderrobert/graft/commit/b930c7c9c3c3a3845c2991596cc114daf1fe9ece))
+
+
+### Documentation
+
+* add roadmap with planned features ([b78f437](https://github.com/raiderrobert/graft/commit/b78f437c02fca0c7821d7aaf14a4050baf0694bb))
+* expand roadmap with detailed feature designs ([917fde1](https://github.com/raiderrobert/graft/commit/917fde137792b8fa46864f932c3ef205c3fa70fc))
+* update README for optional dest and auto-init ([e77e393](https://github.com/raiderrobert/graft/commit/e77e3938c6dbb4a5864a0705007eb62dc8c046f8))
+
 ## [0.1.1](https://github.com/raiderrobert/graft/compare/v0.1.0...v0.1.1) (2026-03-15)
 
 
