@@ -19,16 +19,16 @@ Or grab a binary from [GitHub Releases](https://github.com/raiderrobert/graft/re
 
 ```bash
 graft init
-graft add gh:your-org/shared-configs/workflows/ci.yml@v2.0.0 .github/workflows/ci.yml
+graft add gh:raiderrobert/graft/justfile@v0.1.0 justfile
 ```
 
 This fetches the file, writes it locally, and records the source in `graft.toml`:
 
 ```toml
-[deps.ci]
-source = "gh:your-org/shared-configs/workflows/ci.yml"
-version = "v2.0.0"
-dest = ".github/workflows/ci.yml"
+[deps.justfile]
+source = "gh:raiderrobert/graft/justfile"
+version = "v0.1.0"
+dest = "justfile"
 ```
 
 Later, check for updates and upgrade:
@@ -38,10 +38,10 @@ graft outdated        # see what's newer
 graft upgrade         # pull updates, three-way merge if you've edited locally
 ```
 
-Already have files you copied manually? Adopt them:
+Already have a file you copied manually? Adopt it:
 
 ```bash
-graft add gh:your-org/shared-configs/Makefile@v1.0.0 Makefile --adopt
+graft add gh:raiderrobert/graft/justfile@v0.1.0 justfile --adopt
 ```
 
 This tracks the file without overwriting your local version. The next `graft upgrade` will merge upstream changes with your edits.
