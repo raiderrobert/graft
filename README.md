@@ -1,26 +1,14 @@
 # graft
 
-You copied that GitHub Actions workflow from your other repo six months ago. You've tweaked it since. Now the original has a fix you need — but you can't just overwrite your copy because you'll lose your changes.
+A version-tracked file dependency manager, written in Rust.
 
-Graft tracks where files came from and merges upstream updates with your local modifications.
-
-```
-graft add gh:your-org/shared-configs/workflows/ci.yml@v2.1.0 .github/workflows/ci.yml
-```
-
-That's it. Graft fetches the file, records the source and version in `graft.toml`, and locks the exact commit SHA in `graft.lock`. Both files go into your repo.
-
-Six months later when upstream ships a fix:
-
-```
-$ graft outdated
-ci  v2.1.0 → v2.3.0  .github/workflows/ci.yml
-
-$ graft upgrade ci
-Merged ci (v2.1.0 → v2.3.0) — clean merge, your changes preserved.
-```
-
-Graft does a three-way merge: the version you originally fetched, your current file, and the new upstream version. Your local tweaks stay. Upstream fixes land. Conflicts get standard git conflict markers — resolve them the way you already know how.
+- **Track individual files** from any GitHub repo — Makefiles, CI workflows, linter configs, skills, whatever.
+- **Three-way merge on upgrade.** Edit your local copy freely. When upstream updates, graft merges both sets of changes.
+- **Manifest + lockfile.** `graft.toml` declares what you depend on. `graft.lock` pins exact commit SHAs and checksums.
+- **Smart outdated detection.** Only reports a new version when the file content actually changed — not just when the tag bumped.
+- **Works with private repos.** Uses your existing `GH_TOKEN`, `GITHUB_TOKEN`, or `gh` CLI credentials.
+- **CI-friendly.** `graft check` exits non-zero if anything is modified or stale.
+- **No publishing step.** Tag your repo. That's it.
 
 ## Install
 
@@ -30,36 +18,52 @@ cargo install --path .
 
 Or grab a binary from [GitHub Releases](https://github.com/raiderrobert/graft/releases).
 
-## Usage
+## Quick Start
 
 ```bash
-graft init                                              # create graft.toml
-graft add gh:owner/repo/path@v1.0.0 local/path          # fetch a file
-graft add gh:owner/repo/path@v1.0.0 local/path --adopt  # track a file you already have
-graft list                                               # see what you're tracking
-graft outdated                                           # check for newer versions
-graft upgrade                                            # pull updates with merge
-graft check                                              # exit 1 if anything is stale (for CI)
+graft init
+graft add gh:your-org/shared-configs/workflows/ci.yml@v2.0.0 .github/workflows/ci.yml
 ```
 
-Works with private repos — graft uses your existing `GH_TOKEN`, `GITHUB_TOKEN`, or `gh` CLI credentials.
-
-## The manifest
+This fetches the file, writes it locally, and records the source in `graft.toml`:
 
 ```toml
-# graft.toml — you edit this
 [deps.ci]
 source = "gh:your-org/shared-configs/workflows/ci.yml"
-version = "v2.1.0"
+version = "v2.0.0"
 dest = ".github/workflows/ci.yml"
-
-[deps.makefile]
-source = "gh:your-org/shared-configs/Makefile"
-version = "v1.4.0"
-dest = "Makefile"
 ```
 
-`graft.lock` is auto-generated — commit SHA, file checksum, never hand-edited. Both files get checked in.
+Later, check for updates and upgrade:
+
+```bash
+graft outdated        # see what's newer
+graft upgrade         # pull updates, three-way merge if you've edited locally
+```
+
+Already have files you copied manually? Adopt them:
+
+```bash
+graft add gh:your-org/shared-configs/Makefile@v1.0.0 Makefile --adopt
+```
+
+This tracks the file without overwriting your local version. The next `graft upgrade` will merge upstream changes with your edits.
+
+## Commands
+
+```
+graft init                  Create graft.toml
+graft add <src@ver> <dest>  Fetch and track a file
+graft add ... --adopt       Track an existing local file
+graft sync                  Fetch all dependencies
+graft list                  Show grafts with status
+graft check                 Verify all clean (for CI)
+graft outdated              Show newer upstream versions
+graft upgrade [name]        Upgrade with three-way merge
+graft upgrade --dry-run     Preview changes
+graft resolve <name>        Mark conflicts as resolved
+graft remove <name>         Stop tracking (keeps file)
+```
 
 ## License
 
