@@ -1,6 +1,6 @@
 # graft
 
-Package manager for paths.
+A "package manager" for paths, both files and dirs.
 
 - **Pin files, not packages.** Pull a Makefile, a CI workflow, or a linter config from any GitHub repo and lock it to a version.
 - **Edit freely, upgrade safely.** Your local changes are preserved through three-way merge on upgrade.
