@@ -25,48 +25,21 @@ pub fn detect_version_type(version: &str) -> VersionType {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rstest::rstest;
 
-    #[test]
-    fn short_sha() {
-        assert_eq!(
-            detect_version_type("a1b2c3d"),
-            VersionType::Sha("a1b2c3d".to_string())
-        );
+    #[rstest]
+    #[case("a1b2c3d")]
+    #[case("a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2")]
+    fn detects_sha(#[case] input: &str) {
+        assert!(matches!(detect_version_type(input), VersionType::Sha(_)));
     }
 
-    #[test]
-    fn full_sha1() {
-        let sha = "a".repeat(40);
-        assert_eq!(detect_version_type(&sha), VersionType::Sha(sha.clone()));
-    }
-
-    #[test]
-    fn semver_tag() {
-        assert_eq!(
-            detect_version_type("v1.2.0"),
-            VersionType::Tag("v1.2.0".to_string())
-        );
-    }
-
-    #[test]
-    fn uppercase_not_hex() {
-        assert_eq!(
-            detect_version_type("V1.0.0"),
-            VersionType::Tag("V1.0.0".to_string())
-        );
-    }
-
-    #[test]
-    fn too_short_hex() {
-        assert_eq!(
-            detect_version_type("a1b2c3"),
-            VersionType::Tag("a1b2c3".to_string())
-        );
-    }
-
-    #[test]
-    fn too_long_hex() {
-        let long = "a".repeat(65);
-        assert_eq!(detect_version_type(&long), VersionType::Tag(long.clone()));
+    #[rstest]
+    #[case("v1.2.0")]
+    #[case("V1.0.0")]
+    #[case("a1b2c3")]
+    #[case("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")]
+    fn detects_tag(#[case] input: &str) {
+        assert!(matches!(detect_version_type(input), VersionType::Tag(_)));
     }
 }

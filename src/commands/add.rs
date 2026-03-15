@@ -193,24 +193,14 @@ fn derive_name(path: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rstest::rstest;
 
-    #[test]
-    fn derive_name_from_yml_file() {
-        assert_eq!(derive_name("workflows/lint.yml"), "lint");
-    }
-
-    #[test]
-    fn derive_name_from_directory() {
-        assert_eq!(derive_name("skills/"), "skills");
-    }
-
-    #[test]
-    fn derive_name_from_extensionless_file() {
-        assert_eq!(derive_name("Makefile"), "Makefile");
-    }
-
-    #[test]
-    fn derive_name_from_dotfile() {
-        assert_eq!(derive_name(".eslintrc.json"), ".eslintrc");
+    #[rstest]
+    #[case("workflows/lint.yml", "lint")]
+    #[case("skills/", "skills")]
+    #[case("Makefile", "Makefile")]
+    #[case(".eslintrc.json", ".eslintrc")]
+    fn derive_name_from_path(#[case] input: &str, #[case] expected: &str) {
+        assert_eq!(derive_name(input), expected);
     }
 }

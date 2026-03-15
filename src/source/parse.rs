@@ -69,6 +69,7 @@ impl GraftSource {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rstest::rstest;
 
     #[test]
     fn parse_single_file() {
@@ -113,16 +114,11 @@ mod tests {
         assert_eq!(src.owner, "owner");
     }
 
-    #[test]
-    fn invalid_no_prefix() {
-        let result = GraftSource::parse("owner/repo/file");
-        assert!(result.is_err());
-    }
-
-    #[test]
-    fn invalid_too_few_parts() {
-        let result = GraftSource::parse("gh:owner/repo");
-        assert!(result.is_err());
+    #[rstest]
+    #[case("owner/repo/file")]
+    #[case("gh:owner/repo")]
+    fn parse_rejects_invalid(#[case] input: &str) {
+        assert!(GraftSource::parse(input).is_err());
     }
 
     #[test]

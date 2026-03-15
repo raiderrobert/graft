@@ -62,6 +62,7 @@ pub fn compute_state(
 mod tests {
     use super::*;
     use crate::checksum::checksum_bytes;
+    use rstest::rstest;
 
     fn make_dep(dest: &str) -> GraftDep {
         GraftDep {
@@ -141,12 +142,13 @@ mod tests {
         assert_eq!(state, GraftState::Conflicted);
     }
 
-    #[test]
-    fn display_variants() {
-        assert_eq!(GraftState::Synced.to_string(), "synced");
-        assert_eq!(GraftState::Modified.to_string(), "modified");
-        assert_eq!(GraftState::Outdated.to_string(), "outdated");
-        assert_eq!(GraftState::Conflicted.to_string(), "conflicted");
-        assert_eq!(GraftState::Missing.to_string(), "missing");
+    #[rstest]
+    #[case(GraftState::Synced, "synced")]
+    #[case(GraftState::Modified, "modified")]
+    #[case(GraftState::Outdated, "outdated")]
+    #[case(GraftState::Conflicted, "conflicted")]
+    #[case(GraftState::Missing, "missing")]
+    fn display_state(#[case] state: GraftState, #[case] expected: &str) {
+        assert_eq!(state.to_string(), expected);
     }
 }

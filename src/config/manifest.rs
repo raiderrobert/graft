@@ -93,6 +93,7 @@ impl Manifest {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rstest::rstest;
 
     #[test]
     fn parse_single_dep() {
@@ -148,25 +149,34 @@ dest = "config.json"
         assert!(matches!(err, GraftError::DuplicateDest { .. }));
     }
 
-    #[test]
-    fn reject_dest_escaping_root() {
-        let input = r#"
+    #[rstest]
+    #[case("../etc/passwd")]
+    #[case("foo/../../etc/shadow")]
+    fn reject_dest_escaping_root(#[case] dest: &str) {
+        let input = format!(
+            r#"
 [grafts.evil]
 source = "gh:owner/repo/file"
-dest = "../etc/passwd"
-"#;
-        let err = Manifest::parse(input).unwrap_err();
+dest = "{dest}"
+"#
+        );
+        let err = Manifest::parse(&input).unwrap_err();
         assert!(matches!(err, GraftError::DestEscapesRoot { .. }));
     }
 
-    #[test]
-    fn reject_dest_targeting_git() {
-        let input = r#"
+    #[rstest]
+    #[case(".git/hooks/pre-commit")]
+    #[case(".git")]
+    #[case(".git/config")]
+    fn reject_dest_targeting_git(#[case] dest: &str) {
+        let input = format!(
+            r#"
 [grafts.hook]
 source = "gh:owner/repo/hook"
-dest = ".git/hooks/pre-commit"
-"#;
-        let err = Manifest::parse(input).unwrap_err();
+dest = "{dest}"
+"#
+        );
+        let err = Manifest::parse(&input).unwrap_err();
         assert!(matches!(err, GraftError::DestTargetsGit { .. }));
     }
 
