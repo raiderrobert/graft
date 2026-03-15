@@ -1,12 +1,28 @@
 # graft
 
-A package manager for config files, written in Rust.
+You copied that GitHub Actions workflow from your other repo six months ago. You've tweaked it since. Now the original has a fix you need — but you can't just overwrite your copy because you'll lose your changes.
 
-Graft manages versioned dependencies on individual files and directories from GitHub repos. Declare what you depend on in `graft.toml`, fetch with `graft sync`, and upgrade with three-way merge that preserves your local modifications.
+Graft tracks where files came from and merges upstream updates with your local modifications.
+
+```
+graft add gh:your-org/shared-configs/workflows/ci.yml@v2.1.0 .github/workflows/ci.yml
+```
+
+That's it. Graft fetches the file, records the source and version in `graft.toml`, and locks the exact commit SHA in `graft.lock`. Both files go into your repo.
+
+Six months later when upstream ships a fix:
+
+```
+$ graft outdated
+ci  v2.1.0 → v2.3.0  .github/workflows/ci.yml
+
+$ graft upgrade ci
+Merged ci (v2.1.0 → v2.3.0) — clean merge, your changes preserved.
+```
+
+Graft does a three-way merge: the version you originally fetched, your current file, and the new upstream version. Your local tweaks stay. Upstream fixes land. Conflicts get standard git conflict markers — resolve them the way you already know how.
 
 ## Install
-
-Build from source:
 
 ```bash
 cargo install --path .
@@ -14,79 +30,36 @@ cargo install --path .
 
 Or grab a binary from [GitHub Releases](https://github.com/raiderrobert/graft/releases).
 
-## Quick Start
+## Usage
 
 ```bash
-# Initialize a project
-graft init
-
-# Add a file from a GitHub repo
-graft add gh:org/shared-configs/Makefile@v1.0.0 Makefile
-
-# Add a directory of files
-graft add gh:org/shared-configs/workflows/@v1.0.0 .github/workflows/
-
-# Track a file you already copied manually
-graft add gh:org/shared-configs/Makefile@v1.0.0 Makefile --adopt
-
-# Check status of all grafts
-graft list
-
-# Check for newer upstream versions
-graft outdated
-
-# Upgrade (three-way merge if you've made local changes)
-graft upgrade
-
-# Verify everything is in sync (for CI)
-graft check
+graft init                                              # create graft.toml
+graft add gh:owner/repo/path@v1.0.0 local/path          # fetch a file
+graft add gh:owner/repo/path@v1.0.0 local/path --adopt  # track a file you already have
+graft list                                               # see what you're tracking
+graft outdated                                           # check for newer versions
+graft upgrade                                            # pull updates with merge
+graft check                                              # exit 1 if anything is stale (for CI)
 ```
 
-## How It Works
+Works with private repos — graft uses your existing `GH_TOKEN`, `GITHUB_TOKEN`, or `gh` CLI credentials.
 
-**`graft.toml`** declares what you depend on:
+## The manifest
 
 ```toml
-[deps.lint]
-source = "gh:org/shared-configs/workflows/lint.yml"
-version = "v1.2.0"
-dest = ".github/workflows/lint.yml"
+# graft.toml — you edit this
+[deps.ci]
+source = "gh:your-org/shared-configs/workflows/ci.yml"
+version = "v2.1.0"
+dest = ".github/workflows/ci.yml"
 
 [deps.makefile]
-source = "gh:org/shared-configs/Makefile"
-version = "v1.2.0"
+source = "gh:your-org/shared-configs/Makefile"
+version = "v1.4.0"
 dest = "Makefile"
 ```
 
-**`graft.lock`** records the exact resolved state (commit SHAs, checksums). Both files are checked into your repo.
-
-When you upgrade, graft does a **three-way merge** — your local modifications are preserved, upstream changes are applied, and conflicts get standard git conflict markers.
-
-## Commands
-
-| Command | Description |
-|---|---|
-| `graft init` | Create an empty `graft.toml` |
-| `graft add <source@version> <dest>` | Add a file dependency |
-| `graft add ... --adopt` | Track an existing local file |
-| `graft sync` | Fetch all dependencies |
-| `graft list` | Show all grafts with status |
-| `graft check` | Verify all grafts are clean (exit code for CI) |
-| `graft outdated` | Show grafts with newer upstream versions |
-| `graft upgrade [name]` | Upgrade to newer versions |
-| `graft upgrade --dry-run` | Preview what would change |
-| `graft resolve <name>` | Mark a conflicted graft as resolved |
-| `graft remove <name>` | Remove a graft (keeps local file) |
-
-## Authentication
-
-Graft uses your existing GitHub credentials. It checks, in order:
-
-1. `GH_TOKEN` environment variable
-2. `GITHUB_TOKEN` environment variable
-3. `gh auth token` (GitHub CLI)
-
-Private repos work transparently if you have credentials configured.
+`graft.lock` is auto-generated — commit SHA, file checksum, never hand-edited. Both files get checked in.
 
 ## License
 
