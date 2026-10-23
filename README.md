@@ -2,10 +2,9 @@
 
 A "package manager" for paths, both files and dirs.
 
-- **Pin files, not packages.** Pull a Makefile, a CI workflow, or a linter config from any GitHub repo and lock it to a version.
-- **Edit freely, upgrade safely.** Your local changes are preserved through three-way merge on upgrade.
-- **No registry, no publishing.** Tag your source repo. Any file in any GitHub repo is a valid dependency.
-- **CI-ready.** `graft check` exits non-zero if anything is modified or stale.
+Pin path to the version you need from a remote git repo. Anything from a single Makefile to an entire CI workflow.
+
+Edit freely and upgrade safely. Your local changes are preserved through three-way merge on upgrade.
 
 ## Install
 
